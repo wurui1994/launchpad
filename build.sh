@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# set -euo pipefail
 
 APP_NAME="LaunchPad"
 BUNDLE_ID="program.LaunchPad"
@@ -46,6 +46,30 @@ echo "Created app bundle at ${APP_DIR}"
 # xattr -d com.apple.quarantine "${APP_DIR}" 2>/dev/null || true
 
 # Launch the app using open to ensure it's run as a GUI app
-echo "Opening app..."
 echo "${APP_DIR}"
-# open "${APP_DIR}"
+if [ "$1" = "--run" ] || [ "$1" = "-r" ]; then
+    echo "Opening app..."
+    open "${APP_DIR}"
+fi
+
+# Optional: Create a zip archive with date
+if [ "$1" = "--zip" ] || [ "$1" = "-z" ]; then
+    # Get current date in YYYYMMDD format
+    CURRENT_DATE=$(date +"%Y%m%d")
+    ZIP_NAME="${APP_NAME}_${CURRENT_DATE}.zip"
+    ZIP_PATH="build/${ZIP_NAME}"
+    
+    echo "Creating zip archive: ${ZIP_NAME}..."
+    # Remove previous zip if exists
+    rm -f "${ZIP_PATH}"
+    
+    # Create zip archive from the app bundle
+    cd build && zip -r "${ZIP_NAME}" "${APP_NAME}.app" && cd ..
+    
+    echo "Zip archive created at: ${ZIP_PATH}"
+    
+    # Optional: Remove quarantine attribute from the zip file
+    xattr -d com.apple.quarantine "${ZIP_PATH}" 2>/dev/null || true
+    
+    echo "Download link: file://${PWD}/${ZIP_PATH}"
+fi
