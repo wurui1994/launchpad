@@ -15,7 +15,7 @@ LaunchPad是一个macOS应用程序，提供快速启动和搜索应用的功能
 
 由于macOS的安全机制，首次运行从互联网下载的应用程序时可能会遇到"无法打开应用程序"的警告。
 
-该程序未签名，必须移通过终端移除应用程序的quarantine属性
+该程序未签名，必须通过终端移除应用程序的quarantine属性
 
 ```bash
 # 导航到应用程序所在目录
@@ -47,7 +47,7 @@ xattr -d com.apple.quarantine /path/to/LaunchPad.app
 
 1. 启动LaunchPad应用程序
 2. 使用搜索框输入应用程序名称
-3. 按Enter键启动所选应用程序
+3. 点击启动所选应用程序 [Enter键 ToDo]
 
 ## 系统要求
 
