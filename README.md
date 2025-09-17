@@ -73,3 +73,10 @@ LaunchPad不会收集任何个人数据，也不会将任何数据发送到外�
 
 - 电子邮件：1341531859@qq.com
 - GitHub Issues：[提交问题](https://github.com/wurui1994/launchpad/issues)
+
+## 参考来源
+
+本项目参考了以下开源项目：
+
+- [xxnuo/launchpadx](https://github.com/xxnuo/launchpadx)
+- [trey-a-12/LaunchBack](https://github.com/trey-a-12/LaunchBack)
