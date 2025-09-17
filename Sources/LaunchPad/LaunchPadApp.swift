@@ -10,40 +10,14 @@ func getAppDisplayName(at appPath: String) -> String? {
           let bundle = Bundle(path: appPath) else {
         return nil
     }
-
-    // 👇 获取用户首选语言（来自系统图形界面设置）
-    let userPreferredLanguages = getUserPreferredLanguages()
-    let availableLocalizations = bundle.localizations
-
-    // ✅ 使用系统原生匹配机制
-    let bestLocales = Bundle.preferredLocalizations(
-        from: availableLocalizations,
-        forPreferences: userPreferredLanguages
-    )
-
-    if let chosen = bestLocales.first,
-       let lprojPath = bundle.path(forResource: chosen, ofType: "lproj"),
-       let stringsPath = Bundle(path: lprojPath)?.path(forResource: "InfoPlist", ofType: "strings"),
-       let dict = NSDictionary(contentsOfFile: stringsPath) as? [String: String],
-       let displayName = dict["CFBundleDisplayName"] ?? dict["CFBundleName"] {
-        return displayName
-    }
+    
 
     // Fallback: 使用 bundle.localizedInfoDictionary（当前 Locale）
     return bundle.localizedInfoDictionary?["CFBundleDisplayName"] as? String
         ?? bundle.localizedInfoDictionary?["CFBundleName"] as? String
         ?? (bundle.bundleURL.lastPathComponent as NSString).deletingPathExtension
 }
-
-// 👇 获取用户在“系统设置 → 语言与地区”中设置的语言顺序
-func getUserPreferredLanguages() -> [String] {
-    return UserDefaults.standard.array(forKey: "AppleLanguages") as? [String] ?? ["en"]
-}
-
-// 👇 获取当前 Locale 标识符（备用）
-func getCurrentLocaleIdentifier() -> String {
-    return Locale.current.identifier
-}
+    
 
 // MARK: - BorderlessFullscreenWindow
 final class BorderlessFullscreenWindow: NSWindow {
@@ -424,6 +398,18 @@ struct LaunchpadRootView: View {
         return Array(repeating: GridItem(.flexible()), count: count)
     }
 
+    private func getAppNameFromSpotlight(from appPath: String) -> String? {
+        guard let item = MDItemCreate(nil, appPath as CFString) else {
+            return nil
+        }
+        
+        guard let displayName = MDItemCopyAttribute(item, kMDItemDisplayName) else {
+            return nil
+        }
+        
+        return displayName as? String
+    }
+
     private func loadApplications() {
         DispatchQueue.global(qos: .userInitiated).async {
             var results: [AppInfo] = []
@@ -443,6 +429,7 @@ struct LaunchpadRootView: View {
                         print("url", url.path)
                         // let displayName = url.deletingPathExtension().lastPathComponent
                         let displayName = getAppDisplayName(at: url.path)!
+                        // let displayName = getAppNameFromSpotlight(from: url.path)!
                         print("displayName", displayName)
                         let icon = NSWorkspace.shared.icon(forFile: url.path)
                         icon.size = NSSize(width: 128, height: 128)

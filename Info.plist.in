@@ -25,5 +25,7 @@
     <string>13.0</string>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>CFBundleAllowMixedLocalizations</key>
+	<true/>
 </dict>
 </plist>
